@@ -1,0 +1,12 @@
+{
+  "steps": [
+    {"operation": "launch", "arguments": {"bundle_id": "com.example.RemoteIOSDemo"}},
+    {"operation": "wait", "arguments": {"seconds": 1}},
+    {"operation": "screenshot"},
+    {"operation": "assert_equal", "arguments": {
+      "before": "artifacts/reviewed-baseline.png",
+      "after": {"from_step": 2, "field": "path"},
+      "threshold": 0.01
+    }}
+  ]
+}

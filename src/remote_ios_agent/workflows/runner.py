@@ -35,6 +35,30 @@ async def interact_verify(session, x, y, *, wait=0.5, roi=None, threshold=0.01, 
     }
 
 
+def resolve_arguments(value, completed: list[dict]):
+    """Resolve explicit prior-step result references, without expression evaluation."""
+    if isinstance(value, dict):
+        if "from_step" in value:
+            if set(value) != {"from_step", "field"}:
+                raise RemoteIOSError("invalid_reference", "Reference must have from_step and field only")
+            index, field = value["from_step"], value["field"]
+            if type(index) is not int or not 0 <= index < len(completed):
+                raise RemoteIOSError("invalid_reference", "Reference must address a prior completed step")
+            step = completed[index]
+            if step["status"] != "completed" or not isinstance(field, str):
+                raise RemoteIOSError("invalid_reference", "Referenced step is not completed")
+            result = step["result"]
+            for component in field.split("."):
+                if not isinstance(result, dict) or component not in result:
+                    raise RemoteIOSError("invalid_reference", "Referenced result field does not exist")
+                result = result[component]
+            return result
+        return {key: resolve_arguments(item, completed) for key, item in value.items()}
+    if isinstance(value, list):
+        return [resolve_arguments(item, completed) for item in value]
+    return value
+
+
 async def execute(session, steps: list[dict], *, max_actions=20, timeout=120, stop_file: Path | None = None):
     if not 1 <= max_actions <= 100 or len(steps) > max_actions or not 0 < timeout <= 1800:
         raise RemoteIOSError("workflow_limit", "Workflow must fit 1..100 actions and <=1800 seconds")
@@ -61,6 +85,7 @@ async def execute(session, steps: list[dict], *, max_actions=20, timeout=120, st
                 report["steps"].append(entry)
                 write_json(destination, report)
                 try:
+                    args = resolve_arguments(args, report["steps"][:-1])
                     if operation == "interact_verify":
                         result = await interact_verify(session, **args)
                         if not result["ui_changed"]:
@@ -72,6 +97,17 @@ async def execute(session, steps: list[dict], *, max_actions=20, timeout=120, st
                         from remote_ios_agent.build.runner import build
 
                         result = await build(artifacts=session.config.artifacts, **args)
+                    elif operation == "sign":
+                        from remote_ios_agent.build.runner import sign
+
+                        result = await sign(
+                            artifacts=session.config.artifacts,
+                            **{key: Path(value) for key, value in args.items()},
+                        )
+                    elif operation == "package":
+                        from remote_ios_agent.deployment.package import package_ipa
+
+                        result = package_ipa(Path(args["app"]), Path(args["output"]))
                     elif operation in {
                         "observe",
                         "screenshot",
@@ -92,13 +128,18 @@ async def execute(session, steps: list[dict], *, max_actions=20, timeout=120, st
                             raise RemoteIOSError("invalid_argument", "Wait must be 0..30 seconds")
                         await asyncio.sleep(seconds)
                         result = {"waited": seconds}
-                    elif operation == "compare":
+                    elif operation in {"compare", "assert_equal"}:
                         result = compare(
                             Path(args["before"]),
                             Path(args["after"]),
                             args.get("roi"),
                             args.get("threshold", 0.01),
                         )
+                        if operation == "assert_equal" and result["changed"]:
+                            entry["result"] = result
+                            raise RemoteIOSError(
+                                "visual_regression", "Image difference exceeds threshold", details=result
+                            )
                     else:
                         raise RemoteIOSError(
                             "unknown_operation", f"Unsupported workflow operation: {operation}"

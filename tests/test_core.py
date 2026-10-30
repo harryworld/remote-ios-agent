@@ -162,3 +162,35 @@ async def test_logs_are_bounded(config):
     async with await AsyncRemoteIOS(config).session() as session:
         result = await session.logs("demo", seconds=0.01)
         assert result["count"] == 1 and result["simulated"]
+
+
+async def test_workflow_result_references_and_visual_regression(config):
+    async with await AsyncRemoteIOS(config).session() as session:
+        report = await execute(
+            session,
+            [
+                {"operation": "screenshot"},
+                {"operation": "tap", "arguments": {"x": 200, "y": 400}},
+                {"operation": "screenshot"},
+                {
+                    "operation": "assert_equal",
+                    "arguments": {
+                        "before": {"from_step": 0, "field": "path"},
+                        "after": {"from_step": 2, "field": "path"},
+                    },
+                },
+            ],
+        )
+        assert report["status"] == "failed"
+        assert report["steps"][-1]["error"]["code"] == "visual_regression"
+        assert report["steps"][-1]["result"]["changed"]
+
+
+async def test_forward_workflow_reference_fails_before_action(config):
+    async with await AsyncRemoteIOS(config).session() as session:
+        report = await execute(
+            session,
+            [{"operation": "launch", "arguments": {"bundle_id": {"from_step": 1, "field": "bundle_id"}}}],
+        )
+        assert report["steps"][0]["error"]["code"] == "invalid_reference"
+        assert session.backend.app is None

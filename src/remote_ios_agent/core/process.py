@@ -10,6 +10,8 @@ async def run(
     argv: list[str], *, cwd: Path | None = None, timeout: float = 120, log: Path | None = None
 ) -> dict:
     """No shell interpolation; bounded execution; kill the process group on cancellation."""
+    if not 0 < timeout <= 3600:
+        raise RemoteIOSError("invalid_argument", "Process timeout must be >0 and <=3600 seconds")
     stream = None
     try:
         if log:

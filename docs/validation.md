@@ -10,7 +10,7 @@ Host: macOS ARM64 (Darwin 25.6.0), Python 3.12.9, pymobiledevice3 11.48.0, Swift
 
 | Check | Actual result |
 |---|---|
-| Python unit/integration suite | 39 passed; hardware test deselected; includes coordinates, evidence, failure preservation, cancellation cleanup, subprocess deadlines, API/CLI, WDA contracts, and real stdio MCP handshake |
+| Python unit/integration suite | 42 passed; hardware test deselected; includes coordinates, evidence, failure preservation, cancellation cleanup, subprocess deadlines, API/CLI, WDA contracts, and real stdio MCP handshake |
 | Ruff lint + format | Passed |
 | Mock smoke workflow | Four steps completed: simulated launch, observe, tap/change comparison, simulated log collection |
 | Mock before/after capture | PNGs and sidecars saved; `simulated=true`, dispatched action remains unverified |

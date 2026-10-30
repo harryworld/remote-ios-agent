@@ -81,6 +81,6 @@ uv run ruff check .
 uv run ruff format --check .
 ```
 
-[Architecture](docs/architecture.md) · [Research/licenses](docs/research/upstreams.md) · [Installation](docs/installation.md) · [Troubleshooting](docs/troubleshooting.md).
+[Workflows](docs/workflows.md) · [Architecture](docs/architecture.md) · [Research/licenses](docs/research/upstreams.md) · [Installation](docs/installation.md) · [Troubleshooting](docs/troubleshooting.md).
 
 Python toolkit: GPL-3.0-only, compatible with pymobiledevice3. Independent Swift SDK: MIT; see its own LICENSE. No upstream setup scripts or SDK binaries are vendored.

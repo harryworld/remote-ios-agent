@@ -23,6 +23,17 @@ def create_server(config: Config | None = None):
             async with gate:
                 async with await api.session(device) as session:
                     result = await operation(session, **arguments)
+                    if isinstance(result, dict):
+                        if result.get("status") in {"failed", "timeout", "stopped"}:
+                            raise RemoteIOSError(
+                                "workflow_incomplete", result["status"], details=serializable(result)
+                            )
+                        if result.get("ui_changed") is False:
+                            raise RemoteIOSError(
+                                "no_visual_change",
+                                "No UI change above threshold",
+                                details=serializable(result),
+                            )
                     return {"ok": True, "result": serializable(result)}
         except Exception as exc:
             error = (

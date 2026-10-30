@@ -43,3 +43,11 @@ async def test_stdio_handshake_and_call(tmp_path):
             assert any(t.name == "ios_screenshot" for t in tools.tools)
             result = payload(await client.call_tool("ios_device_connect", {}))
             assert result["ok"] and result["result"]["simulated"]
+
+
+async def test_mcp_does_not_hide_workflow_or_observation_failure(tmp_path):
+    server = create_server(Config(backend="mock", artifacts=tmp_path))
+    result = payload(await server.call_tool("ios_interact_verify", {"x": 1, "y": 1}))
+    assert not result["ok"] and result["error"]["code"] == "no_visual_change"
+    result = payload(await server.call_tool("ios_run_workflow", {"steps": [{"operation": "unknown"}]}))
+    assert not result["ok"] and result["error"]["code"] == "workflow_incomplete"

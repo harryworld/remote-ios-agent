@@ -1,0 +1,15 @@
+{
+  "steps": [
+    {"operation": "build", "arguments": {"project": "examples/demo-ios-app"}},
+    {"operation": "sign", "arguments": {
+      "app": {"from_step": 0, "field": "path"},
+      "key": "/secure/developer-key.pem",
+      "profile": "/secure/demo.mobileprovision",
+      "output": "build/Demo.ipa"
+    }},
+    {"operation": "install", "arguments": {"path": {"from_step": 1, "field": "path"}}},
+    {"operation": "launch", "arguments": {"bundle_id": {"from_step": 0, "field": "bundle_id"}}},
+    {"operation": "screenshot"},
+    {"operation": "logs", "arguments": {"bundle_id": {"from_step": 0, "field": "bundle_id"}, "seconds": 5}}
+  ]
+}

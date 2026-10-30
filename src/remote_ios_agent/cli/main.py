@@ -231,6 +231,9 @@ async def dispatch(args, config):
 
 
 def main():
+    from remote_ios_agent.core.logging import configure_logging
+
+    configure_logging()
     try:
         args = parser().parse_args()
         config = Config.load(

@@ -7,6 +7,7 @@ from remote_ios_agent.automation.coordinates import normalize
 from remote_ios_agent.capture.artifacts import save_capture
 from remote_ios_agent.core.config import Config, DeviceConfig
 from remote_ios_agent.core.errors import RemoteIOSError
+from remote_ios_agent.core.logging import event
 from remote_ios_agent.core.models import ActionResult, serializable
 from remote_ios_agent.devices.base import Backend
 
@@ -21,18 +22,24 @@ class DeviceSession:
         self.lock = asyncio.Lock()
 
     async def call(self, operation, *args, **kwargs):
+        event(operation.__name__, self.id, "started")
         try:
             async with asyncio.timeout(self.config.timeout):
-                return await operation(*args, **kwargs)
+                result = await operation(*args, **kwargs)
+                event(operation.__name__, self.id, "completed")
+                return result
         except RemoteIOSError:
+            event(operation.__name__, self.id, "failed")
             raise
         except TimeoutError as exc:
+            event(operation.__name__, self.id, "timeout")
             raise RemoteIOSError(
                 "timeout",
                 "Operation deadline exceeded; effect may be unknown. Observe before retrying.",
                 retryable=False,
             ) from exc
         except Exception as exc:
+            event(operation.__name__, self.id, "failed")
             # Do not expose exception bodies that may contain pairing material.
             raise RemoteIOSError(
                 "backend_error",

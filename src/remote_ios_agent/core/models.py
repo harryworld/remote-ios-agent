@@ -49,6 +49,7 @@ class Capture:
     action_id: str | None = None
     application_identifier: str | None = None
     application_source: str = "caller_context_not_foreground_detection"
+    orientation_source: str = "configuration_not_sensor"
     simulated: bool = False
 
 
