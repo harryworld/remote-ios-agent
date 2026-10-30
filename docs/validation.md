@@ -34,8 +34,19 @@ The first sandboxed GitHub/Tailscale probes could not access their host/network 
 
 ## Linux CI
 
-The repository configures Ubuntu 24.04 x86_64 and ARM64, Python 3.12/3.13, frozen dependencies, unit/integration tests, lint, and a mock smoke workflow. The [implementation CI run](https://github.com/harryworld/remote-ios-agent/actions/runs/41009973315) at `4a79f8d` passed all four Ubuntu Python jobs (42 tests each), lint/format, the mock smoke workflow, and Docker. The Swift job is recorded after completion below. The first published run failed only on build-adapter formatting; that was corrected before these passing results. CI does not provision Apple SDKs or hardware and must not be called a Linux iOS build/device acceptance test.
+The repository configures Ubuntu 24.04 x86_64 and ARM64, Python 3.12/3.13, frozen dependencies, unit/integration tests, lint, and a mock smoke workflow. The [implementation CI run](https://github.com/harryworld/remote-ios-agent/actions/runs/41009973315) at `4a79f8d` passed all four Ubuntu Python jobs (42 tests each), lint/format, the mock smoke workflow, and Docker. The Swift Debug/Release job also passed. The first published run failed only on build-adapter formatting; that was corrected before these passing results. CI does not provision Apple SDKs or hardware and must not be called a Linux iOS build/device acceptance test.
 
 ## Evidence handling
 
 Generated captures/video/logs remain in ignored local `artifacts/`, with private paths/identifiers excluded from public receipts. Reproduce the simulated checks with `scripts/smoke.sh`. Real hardware testing is opt-in via `REMOTE_IOS_HARDWARE_TEST=1`, explicit config/device, signed demo IPA/bundle and screenshot pixel coordinates. Preserve the resulting report and visually confirm the expected counter value; require actual app logs, a Linux build receipt and a second unattended iteration before changing acceptance status.
+
+## Final published implementation receipt
+
+[CI run 41010116406](https://github.com/harryworld/remote-ios-agent/actions/runs/41010116406) passed all six jobs at implementation commit `49a52506e94207beef09cff60fe3f537190708aa`:
+
+- Ubuntu 24.04 x86_64 with Python 3.12 and 3.13: 42 tests each, lint/format and mock CLI workflow.
+- Ubuntu 24.04 ARM64 with Python 3.12 and 3.13: the same checks.
+- Frozen-lockfile Docker build and mock interaction workflow.
+- Swift SDK registry Debug and Release tests on macOS.
+
+The subsequent receipt commit changes documentation only. These checks validate portable orchestration, packaging and the local SDK registry; they do not validate Linux iOS compilation, real native HID delivery, WDA on hardware or Grok operation. Physical acceptance remains blocked as stated above.
