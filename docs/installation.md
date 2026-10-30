@@ -28,7 +28,7 @@ docker run --rm -v "$PWD/artifacts:/home/agent/artifacts" remote-ios-agent \
   --backend mock workflow interact-verify --x 200 --y 400
 ```
 
-The image is headless, non-root, and excludes local configuration, certificates, pairing records, artifacts, and source-control metadata. Match writable artifact-directory permissions to container UID 10001. It does not contain Apple SDKs, xtool, Swift, signing credentials, or FFmpeg. Add those explicitly to a private derived image as needed.
+The image installs from the frozen `uv.lock` with uv 0.9.7. It is headless, non-root, and excludes local configuration, certificates, pairing records, artifacts, and source-control metadata. Match writable artifact-directory permissions to container UID 10001. It does not contain Apple SDKs, xtool, Swift, signing credentials, or FFmpeg. Add those explicitly to a private derived image as needed.
 
 For real RSD access on a Linux host, use host networking or explicitly routed tunnel networks. Mount only the selected pairing/configuration material read-only. Direct kernel RemotePairing requires `/dev/net/tun` and `NET_ADMIN`; the default unprivileged container intentionally cannot create that tunnel. Prefer creating the tunnel on the Linux host and connecting to its routable RSD endpoint. Docker Desktop networking is different; a successful mock container is not evidence of device connectivity. Never publish an unauthenticated tunnel/WDA endpoint to the public internet.
 

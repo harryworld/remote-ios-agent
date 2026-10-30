@@ -11,10 +11,12 @@ Host: macOS ARM64 (Darwin 25.6.0), Python 3.12.9, pymobiledevice3 11.48.0, Swift
 | Check | Actual result |
 |---|---|
 | Python unit/integration suite | 42 passed; hardware test deselected; includes coordinates, evidence, failure preservation, cancellation cleanup, subprocess deadlines, API/CLI, WDA contracts, and real stdio MCP handshake |
-| Ruff lint + format | Passed |
+| Ruff lint + format | Passed; shell scripts also passed `bash -n` |
+| Packaging | Wheel and sdist built; all source Python modules present; independent Swift SDK included in sdist |
+| Structured events | Parsed operation events as JSON from stderr; stdout remained valid CLI JSON |
 | Mock smoke workflow | Four steps completed: simulated launch, observe, tap/change comparison, simulated log collection |
 | Mock before/after capture | PNGs and sidecars saved; `simulated=true`, dispatched action remains unverified |
-| Sampled video | FFmpeg produced an MP4 from mock screenshots; not native device streaming |
+| Sampled video | FFmpeg produced H.264 MP4, 390×844, 1.28s (ffprobe verified) from mock screenshots; not native device streaming |
 | Swift SDK Debug | Built and 1 XCTest passed; typed action, opt-in, disable, redaction and duplicate registration |
 | Swift SDK Release | Built and 1 XCTest passed; enabling leaves registry disabled |
 | Real `pymobiledevice3 usbmux list` | `[]` |
@@ -32,7 +34,7 @@ The first sandboxed GitHub/Tailscale probes could not access their host/network 
 
 ## Linux CI
 
-The repository configures Ubuntu 24.04 x86_64 and ARM64, Python 3.12/3.13, frozen dependencies, unit/integration tests, lint, and a mock smoke workflow. CI results and run links are recorded below once the published runs complete. CI does not provision Apple SDKs or hardware and must not be called a Linux iOS build/device acceptance test.
+The repository configures Ubuntu 24.04 x86_64 and ARM64, Python 3.12/3.13, frozen dependencies, unit/integration tests, lint, and a mock smoke workflow. The [implementation CI run](https://github.com/harryworld/remote-ios-agent/actions/runs/41009973315) at `4a79f8d` passed all four Ubuntu Python jobs (42 tests each), lint/format, the mock smoke workflow, and Docker. The Swift job is recorded after completion below. The first published run failed only on build-adapter formatting; that was corrected before these passing results. CI does not provision Apple SDKs or hardware and must not be called a Linux iOS build/device acceptance test.
 
 ## Evidence handling
 
