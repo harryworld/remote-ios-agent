@@ -1,0 +1,38 @@
+[build-system]
+requires = ["hatchling==1.30.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "remote-ios-agent"
+version = "0.1.0"
+description = "Linux-first, evidence-driven remote physical iPhone automation"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "GPL-3.0-only"
+authors = [{name = "remote-ios-agent contributors"}]
+dependencies = ["Pillow==13.0.0"]
+
+[project.optional-dependencies]
+device = ["pymobiledevice3==11.48.0"]
+mcp = ["mcp==2.3.0"]
+dev = ["pytest==9.2.0", "pytest-asyncio==1.4.1", "ruff==0.17.3"]
+
+[project.scripts]
+remote-ios = "remote_ios_agent.cli.main:main"
+remote-ios-mcp = "remote_ios_agent.mcp.server:main"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+markers = ["hardware: requires an explicitly selected physical iPhone", "integration: multi-component tests"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "B", "ASYNC"]
+
+# Explicit timeout parameters are part of the public API. Tiny local metadata IO is intentional.
+ignore = ["ASYNC109", "ASYNC240"]

@@ -1,0 +1,37 @@
+name: CI
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  python:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm]
+        python: ['3.12', '3.13']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.9.7'
+      - run: uv sync --frozen --all-extras
+      - run: uv run pytest -m 'not hardware' -q
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run remote-ios --backend mock workflow run examples/agent-workflows/smoke.json
+  swift-registry:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - run: swift test --package-path sdk/RemoteIOSAgentSDK
+      - run: swift test -c release --package-path sdk/RemoteIOSAgentSDK
+  docker:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t remote-ios-agent .
+      - run: docker run --rm remote-ios-agent --backend mock workflow interact-verify --x 200 --y 400

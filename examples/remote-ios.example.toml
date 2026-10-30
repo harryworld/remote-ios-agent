@@ -1,0 +1,27 @@
+[remote_ios]
+backend = "pmd3"
+selected = "phone"
+artifacts = "artifacts"
+timeout = 30
+
+[devices.phone]
+identifier = "REPLACE_WITH_ACTUAL_DEVICE_UDID"
+transport = "remote-pairing"
+host = "100.x.y.z" # Phone's tailnet address; not an RSD endpoint.
+port = 49152 # Discover the actual advertised RemotePairing port on the local network first.
+protocol = "quic" # Explicit; TCP requires a TLS-PSK-capable Python/OpenSSL build.
+orientation = "portrait" # Keep orientation locked; re-observe after rotation.
+# wda_url = "http://127.0.0.1:8100"
+# wda_session = "EXISTING_SESSION_ID"
+
+# Alternative: explicit, already established and routed RSD tunnel.
+# [devices.rsd-phone]
+# identifier = "ACTUAL_DEVICE_UDID"
+# transport = "rsd"
+# host = "fd00::1"
+# port = 65002
+
+# Alternative: local USB with existing trust and pairing.
+# [devices.usb-phone]
+# identifier = "ACTUAL_DEVICE_UDID"
+# transport = "usb"

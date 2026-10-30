@@ -1,0 +1,6 @@
+{"steps":[
+  {"operation":"launch","arguments":{"bundle_id":"com.example.RemoteIOSDemo"}},
+  {"operation":"observe"},
+  {"operation":"interact_verify","arguments":{"x":200,"y":400,"roi":[80,300,230,150],"wait":0.1}},
+  {"operation":"logs","arguments":{"bundle_id":"com.example.RemoteIOSDemo","seconds":1}}
+]}
