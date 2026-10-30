@@ -4,6 +4,84 @@ Linux-first CLI, Python API, and MCP tools for remote **physical iPhones**. No d
 
 **Status: experimental 0.1 foundation. The Linux → physical iPhone acceptance milestone is not yet verified.** Real operations use pymobiledevice3, never a silent mock fallback. See [validation evidence](docs/validation.md), [compatibility](docs/compatibility.md), and [roadmap](docs/roadmap.md).
 
+## Set up with Grok Bot
+
+Copy and paste this entire prompt into Grok Bot. It requires no edits before use: Grok should discover existing setup and ask for the device-specific inputs it cannot obtain. You may need to complete Tailscale sign-in, iPhone trust/Developer Mode, and secure provisioning of pairing and signing files.
+
+```text
+Set up remote-ios-agent on this Linux cloud computer and work toward a verified
+remote physical-iPhone development loop. Perform the setup and run the checks;
+do not stop after giving me a plan or installation instructions.
+
+Repository: https://github.com/harryworld/remote-ios-agent
+
+1. Inspect this host's OS, architecture, Python, installed tools, permissions,
+   network access and existing device/build setup. Reuse working installations
+   and preserve unrelated files. Clone the repository into a suitable workspace,
+   or inspect an existing checkout without resetting local changes. Read README.md,
+   examples/agent-workflows/AGENT.md and docs/{installation,grok-bot,device-setup,
+   build,compatibility,mcp,workflows,troubleshooting}.md before configuring it.
+
+2. Install the missing Linux prerequisites using the host's supported package
+   manager: Python 3.12+, venv support, Git, required native libraries, and FFmpeg
+   for sampled video. Install uv from its official distribution if needed. In
+   the repository, run:
+     uv sync --frozen --all-extras
+     uv run remote-ios doctor
+     uv run pytest -m 'not hardware' -q
+     uv run remote-ios --backend mock workflow run examples/agent-workflows/smoke.json
+   Label these results as simulated; they do not prove phone access. Use
+   `uv run remote-ios` for subsequent commands so the environment stays consistent.
+
+3. Install/configure Tailscale where this environment permits it and help me
+   complete sign-in. Discover available devices and existing pairing records
+   without printing credentials. Ask only for missing inputs: the target iPhone's
+   UDID, tailnet address and actual RemotePairing port (or a prepared RSD endpoint),
+   plus secure local paths to required pairing/signing files. Never ask me to paste
+   private keys or pairing-record contents into chat. Explain any necessary
+   one-time USB trust, Developer Mode, developer disk image or Mac provisioning step.
+   Tailscale connectivity alone does not establish Apple pairing or HID access.
+
+4. Create the ignored remote-ios.toml from examples/remote-ios.example.toml using
+   verified values, explicit device selection and the correct orientation. Check
+   TUN permissions, tunnel routing and the media return path. If this cloud host
+   cannot create a tunnel, investigate an already prepared, routed RSD endpoint.
+   Do not expose device services publicly or treat an HTTP forward as an Apple
+   tunnel. Run device status and report actual capabilities and connection errors.
+
+5. Follow docs/build.md to install a compatible Linux Swift toolchain and xtool,
+   configure an authorized Apple SDK supplied through a secure path, and prepare
+   signing with a valid development identity/profile. Use the repository's setup
+   helpers where applicable. Do not download unofficial SDK copies or claim that
+   arbitrary Xcode projects work. Build examples/demo-ios-app on Linux, sign its
+   exact output, install it on the selected iPhone, and launch its bundle ID.
+   An existing signed demo IPA can unblock device testing, but does not count as
+   a successful Linux build.
+
+6. Capture the actual phone screen, locate the demo's Increment button in screenshot
+   pixels, tap it through native HID, and save before/after captures and JSON results.
+   Confirm the displayed counter increases, collect actual app logs, and repeat
+   the interaction without manual intervention. Use an appropriate comparison ROI;
+   a command exit or unrelated pixel change is not proof of successful interaction.
+   Try periodic capture and sampled video separately. Keep WDA optional; configure
+   its hierarchy/assertion tools only if a compatible signed runner is available.
+
+7. If this Grok environment supports MCP stdio, configure the server using docs/mcp.md
+   with this checkout's actual executable/config paths, then verify tool discovery
+   and a device query. Otherwise use the CLI directly. Do not assume Grok-specific
+   APIs or browser automation. The SDK WebSocket/feedback transport and native
+   video are deferred features; report them as unavailable rather than fabricating
+   setup or success.
+
+Continue independent setup when a step is blocked. Use bounded timeouts/action
+counts, stop on unexpected device effects, and observe before retrying an action
+whose outcome is uncertain. Keep credentials and private captures out of Git.
+Finish with installed versions, working commands, configuration/artifact paths,
+executed checks, real versus simulated results, exact blockers, and the smallest
+remaining action I need to take. Mark the full loop complete only after the Linux
+build and repeated physical-device workflow have actually succeeded.
+```
+
 ## Install and try
 
 Python 3.12+ on Ubuntu/Debian (x86_64 or ARM64):
