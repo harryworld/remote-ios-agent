@@ -1,5 +1,7 @@
 # Linux builds and signing
 
+For native Mac builds and distribution using an existing Xcode project, follow the [macOS + Xcode guide](macos-xcode.md). `remote-ios build` remains the xtool adapter on every host.
+
 ## Supported input
 
 The current adapter invokes `xtool dev build --configuration debug|release` in a trusted project containing `Package.swift` and `xtool.yml`, then requires exactly one `.app` artifact. It does not invoke `xcodebuild`, and explicitly rejects `.xcodeproj`/`.xcworkspace` input.

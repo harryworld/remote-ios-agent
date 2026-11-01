@@ -1,5 +1,9 @@
 # Installation
 
+## macOS with Xcode
+
+Follow the [macOS + Xcode guide](macos-xcode.md) for native Xcode builds, signing, physical-iPhone deployment, toolkit setup, and TestFlight distribution. The Linux installer below is not used on macOS.
+
 ## Ubuntu/Debian
 
 Use Python 3.12+ (Ubuntu 24.04 includes 3.12). On older Debian releases, install a supported Python explicitly rather than replacing the system interpreter. Both x86_64 and ARM64 are CI targets, subject to upstream package wheels/system libraries.

@@ -4,6 +4,8 @@ Linux-first CLI, Python API, and MCP tools for remote **physical iPhones**. No d
 
 **Status: experimental 0.1 foundation. The Linux → physical iPhone acceptance milestone is not yet verified.** Real operations use pymobiledevice3, never a silent mock fallback. See [validation evidence](docs/validation.md), [compatibility](docs/compatibility.md), and [roadmap](docs/roadmap.md).
 
+**Using a Mac?** Follow the [macOS + Xcode guide](docs/macos-xcode.md) to build and sign with Xcode, deploy to your iPhone, use toolkit automation, and distribute through TestFlight.
+
 ## Set up with Grok Bot
 
 Copy and paste this entire prompt into Grok Bot. It requires no edits before use: Grok should discover existing setup and ask for the device-specific inputs it cannot obtain. You may need to complete Tailscale sign-in, iPhone trust/Developer Mode, and secure provisioning of pairing and signing files.
